@@ -1,0 +1,51 @@
+{
+    "configuration":
+    [
+        {
+            "midi":{
+
+                "channel":0,
+                "event": "Note On",
+                "key": 4
+            },
+            "raise_action":
+            {
+                "action":"activate",
+                "layers":[
+                    1
+                ]
+            } 
+        },
+        {
+            "midi":{
+
+                "channel":10,
+                "event": "Note Off",
+                "key": 4
+            },
+            "raise_action":
+            {
+                "action":"deactivate",
+                "layers":[
+                    1
+                ]
+            } 
+        },
+        {
+            "midi":{
+
+                "channel":0,
+                "event": "PC",
+                "key": 14
+            },
+            "raise_action":
+            {
+                "action":"moveTo",
+                "layers":[
+                    1,
+                    3
+                ]
+            } 
+        }
+    ]
+}
