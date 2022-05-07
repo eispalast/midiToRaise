@@ -1,6 +1,5 @@
 from time import sleep
 
-from ordered_set import T
 from configuration import configuration
 #import pygame.midi
 import threading
@@ -26,9 +25,11 @@ def initialize():
     for p in ports:
         if p.description == "Raise":
             dygma = serial.Serial(port=p.device)
-            if dygma != None:
+            if dygma.is_open:
                 print("Success")
-            # really check if the kb was found
+            else:
+                print("Could not connect to Raise. Is another process accessing it?")
+            # really ch1eck if the kb was found
             break
     global config
     config = configuration()

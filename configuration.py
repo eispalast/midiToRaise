@@ -1,6 +1,10 @@
 import json
 from random import choices
+from numpy import integer
 from simple_term_menu import TerminalMenu
+from soupsieve import select
+from sympy import im
+from menu import Menu
 
 class configuration:
     path = None
@@ -19,15 +23,18 @@ class configuration:
     
     def mainMenu(self):
         while(True):
-            options = ["[a] Assign mapping","[e] Edit/Delete mapping", "[q] Quit"]
-            menu = TerminalMenu(options,title="Choose an option")
-            menu_entry_index= menu.show()
+            options = ["[0] Assign mapping","[1] Edit/Delete mapping", "[2] Quit"]
+            print("Choose an option")
+            main_menu = Menu(options=options,title="What do you want to do?")
+            selection = main_menu.start()
+            # menu = TerminalMenu(options,title="Choose an option")
+            # menu_entry_index= menu.show()
 
-            if menu_entry_index == 0:
+            if selection == 0:
                 self.assignNewMenu()
-            elif menu_entry_index == 1:
+            elif selection == 1:
                 self.editMenu()
-            elif menu_entry_index == 2:
+            elif selection == 2:
                 break
 
     def assignNewMenu(self):
@@ -43,15 +50,15 @@ class configuration:
             options.append(f"[{id}] {(str(midi['channel'])) :3} {midi['event']:8} {(str(midi['key'])):3} -> {raise_action['action']} {raise_action['layers']}")
         options.append("[b] back")
         
-        menu = TerminalMenu(options,title="Choose an assignment to edit")
-        result = menu.show()
+        menu = Menu(options,title="Choose an assignment to edit")
+        result = menu.start()
         
         # in case "back" was pressed
         if result == (len(options)-1):
             return
 
         # second layer edit menu
-        menu = TerminalMenu(menu_entries= ["[m] Change MIDI", "[a] Change action", "[d] Delete", "[b] Back"], title=options[result])
-        result = menu.show()
+        menu = Menu(options = ["[m] Change MIDI", "[a] Change action", "[d] Delete", "[b] Back"], title=options[result])
+        result = menu.start()
         if result == 3:
             self.editMenu()
