@@ -32,9 +32,17 @@ class Menu():
                 return
         self.shortcuts = shortcuts_temp
         self.options = options_temp
+
+    def clear_screen(self):
+            if os.name == "nt":
+                os.system("cls")
+            elif os.name == "posix":
+                os.system("clear")
+
     def start(self):
         while(True):
-            os.system("clear")
+            self.clear_screen()
+            
             print(self.title)
             menu_string = ""
             for id,o in enumerate(self.options):
@@ -55,18 +63,8 @@ class Menu():
             elif pressedkey == keys.DOWN:
                 self.current_selection = min(self.current_selection+1,len(self.options)-1)
             elif pressedkey == keys.ENTER:
-                os.system("clear")
+                self.clear_screen()
                 return self.current_selection
             elif pressedkey in self.shortcuts:
-                os.system("clear")
+                self.clear_screen()
                 return self.shortcuts.index(pressedkey)
-
-            
-
- 
-
-# if __name__ == "__main__":
-#     o = ["[2] zweite Option"," [e] erste","[v] vierte"]
-#     men= menu(o,"wähle")
-#     choice = men.start()
-#     print(choice)

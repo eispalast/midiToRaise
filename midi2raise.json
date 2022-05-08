@@ -1,5 +1,6 @@
 {
-    "configuration":
+    "mididevice": "APC Key 25",
+    "assignments":
     [
         {
             "midi":{
