@@ -1,3 +1,7 @@
+Disclaimer
+==========
+The program is not yet finished and not functional in the current state
+
 Troubleshooting
 ---------------
 Midi cannot be started on Linux with a message like this: 
