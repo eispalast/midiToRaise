@@ -5,6 +5,9 @@ from boto import config
 from menu import Menu
 from pygame import midi as midi
 
+MIDIEVENTS_I2S = {0x8:"Note Off", 0x9:"Note On", 0xC:"PC"}
+MIDIEVENTS_S2I = {"Note Off":0x8, "Note On":0x9, "PC":0xC}
+
 class configuration:
     path = None
     assignments = None
@@ -38,11 +41,22 @@ class configuration:
         with open(self.path,"r") as configFile:
             self.config = json.load(configFile)
             self.assignments = self.config["assignments"]
+            self.midiStr2int()
             self.midi_device_name = self.config["mididevice"]
 
+    def midiStr2int(self):
+        for a in self.assignments:
+            a["midi"]["event"] = MIDIEVENTS_S2I[a["midi"]["event"]]
+
+    def midiInt2Str(self):
+        for a in self.assignments:
+            a["midi"]["event"] = MIDIEVENTS_I2S[a["midi"]["event"]]
+                    
     def writeConfig(self):
+        self.midiInt2Str()
         with open(self.path,"w") as configFile:
             json.dump(self.config, configFile, indent=2)
+        self.midiStr2int()
     
     def mainMenu(self):
         while(True):

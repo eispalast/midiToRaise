@@ -1,6 +1,7 @@
 Disclaimer
 ==========
-The program is not yet finished and not functional in the current state
+The program is currently able to send correct messages to the raise,
+but the configuration has to be done manually.
 
 Troubleshooting
 ---------------
