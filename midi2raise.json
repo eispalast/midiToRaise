@@ -43,6 +43,48 @@
           7
         ]
       }
+    },
+    {
+      "midi": {
+        "channel": 1,
+        "event": "Note On",
+        "key": 50
+      },
+      "raise_action": {
+        "action": "activate",
+        "layers": [
+          2
+        ]
+      }
+    },
+    {
+      "midi": {
+        "channel": 1,
+        "event": "Note Off",
+        "key": 50
+      },
+      "raise_action": {
+        "action": "deactivate",
+        "layers": [
+          2
+        ]
+      }
+    },
+    {
+      "midi": {
+        "channel": 1,
+        "event": "Note On",
+        "key": 51
+      },
+      "raise_action": {
+        "action": "moveTo",
+        "layers": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
     }
   ]
 }
