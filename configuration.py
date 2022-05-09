@@ -36,7 +36,7 @@ class configuration:
     
         for i in range(midi.get_count()):
             device = midi.get_device_info(i)
-            if self.midi_device_name == str(device[1]) and device[2] == 1:
+            if self.midi_device_name == str(device[1])[2:-1] and device[2] == 1:
                 self.midi_device = midi.Input(i)
 
     def readConfig(self):
