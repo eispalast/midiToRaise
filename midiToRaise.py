@@ -8,6 +8,8 @@ import serial.tools.list_ports
 dygma = None
 config = None
 
+def rotate_layers(a):
+    a["raise_action"]["layers"].append(a["raise_action"]["layers"].pop(0))
 
 
 def translate():
@@ -26,9 +28,9 @@ def translate():
 
                     for a in config.assignments:
                         if trig_event == a["midi"]["event"] and trig_channel == a["midi"]["channel"] and trig_key == a["midi"]["key"]:
-                            print("hooray")
                             send_string = f"layer.{a['raise_action']['action']} {a['raise_action']['layers'][0]}\n"
                             dygma.write(send_string.encode('utf-8'))
+                            rotate_layers(a)
                     
 
 

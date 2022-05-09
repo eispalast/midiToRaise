@@ -14,5 +14,6 @@ copy the files the correct directory.
 You might have to create that directory first.
 
     mkdir /usr/lib/alsa-lib
+    
     cp /usr/lib/x86_64-linux-gnu/alsa-lib/libasound_module_conf_pulse.so
     /usr/lib/alsa-lib/libasound_module_conf_pulse.so

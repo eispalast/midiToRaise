@@ -30,14 +30,17 @@
     {
       "midi": {
         "channel": 1,
-        "event": "PC",
-        "key": 14
+        "event": "Note On",
+        "key": 49
       },
       "raise_action": {
         "action": "moveTo",
         "layers": [
+          0,
           1,
-          3
+          3,
+          5,
+          7
         ]
       }
     }
