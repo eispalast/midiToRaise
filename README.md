@@ -35,6 +35,7 @@ If you instead choose to assign the MIDI event to a `moveTo` action, you can sel
 
 All assignments and the MIDI device's name are stored in the file [midi2raise.json](midi2raise.json). You can edit them there manually or backup this file or use it on multiple machines.
 
+As long as the program is running it translates your MIDI key presses to your configured layer changes, no matter if you are in main menu or in an options menu.
 
 Disclaimer
 ----------
