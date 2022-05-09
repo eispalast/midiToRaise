@@ -1,25 +1,48 @@
 import json
+from unittest import result
+
+from boto import config
 from menu import Menu
+from pygame import midi as midi
 
 class configuration:
     path = None
     assignments = None
-    midi_device_name = None
+    _midi_device_name = None
     midi_device = None
+    config = None
     def __init__(self,path="./midi2raise.json") -> None:
         self.path = path
         self.readConfig()
+        self.initMidi()
+    
+    @property
+    def midi_device_name(self):
+        return self._midi_device_name
+    
+    @midi_device_name.setter
+    def midi_device_name(self,new_val):
+        self._midi_device_name = new_val
+        self.config["mididevice"] = new_val
+        self.writeConfig()
+
+    def initMidi(self):
+        midi.init()
+    
+        for i in range(midi.get_count()):
+            device = midi.get_device_info(i)
+            if self.midi_device_name in str(device[1]) and device[2] == 1:
+                self.midi_device = midi.Input(i)
 
     def readConfig(self):
         with open(self.path,"r") as configFile:
-            config = json.load(configFile)
-            self.assignments = config["assignments"]
-            self.midi_device_name = config["mididevice"]
+            self.config = json.load(configFile)
+            self.assignments = self.config["assignments"]
+            self.midi_device_name = self.config["mididevice"]
 
     def writeConfig(self):
-        # TODO: correctly save configuration
         with open(self.path,"w") as configFile:
-            json.dump(self.assignments, configFile)
+            json.dump(self.config, configFile, indent=2)
     
     def mainMenu(self):
         while(True):
@@ -70,3 +93,31 @@ class configuration:
         result = menu.start()
         if result == 3:
             self.editMenu()
+
+    def optionsMenu(self):
+        options = ["[s] Select MIDI device", "[b] back"]
+        menu = Menu(options=options, title="Options")
+        result = menu.start()
+        if result == 0:
+            self.selectMidiMenu()
+        elif result == (len(options)-1):
+            self.mainMenu()
+    
+    def selectMidiMenu(self):
+        options = []
+        device_ids = []
+        option_enum = 1
+        for i in range(midi.get_count()):
+            device = midi.get_device_info(i)
+            if device[2] == 1:
+                options.append(f"[{option_enum}] {str(device[1])[2:-1]}")
+                option_enum += 1
+                device_ids.append(i)
+        options.append("[b] back")
+        menu = Menu(options,"Select MIDI device")
+        result = menu.start()
+        if result == (len(options)-1):
+            self.optionsMenu
+        else:
+            self.midi_device = midi.Input(device_ids[result])
+            self.midi_device_name = options[result][4:]

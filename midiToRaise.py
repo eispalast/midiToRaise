@@ -1,5 +1,4 @@
 from time import sleep
-
 from configuration import configuration
 import pygame.midi as midi
 import threading
@@ -10,12 +9,17 @@ dygma = None
 config = None
 
 
+
 def translate():
     global config
     print("Started translating")
     while(True):
         # wait for midi input and send it to the raise
-        pass
+        if (config.midi_device != None):
+            if midi.Input.poll(config.midi_device):
+                midiin=(midi.Input.read(config.midi_device,3))
+                print(midiin)
+                
 
 
 
@@ -34,17 +38,7 @@ def initialize():
     global config
     config = configuration()
 
-    # Initialize midi device
-    midi.init()
     
-    for i in range(midi.get_count()):
-        device = midi.get_device_info(i)
-        if config.midi_device_name in str(device[1]) and device[2] == 1:
-            print("hooray")
-            config.midi_device = midi.Input(i)
-    if config.midi_device == None:
-        print("MIDI device not found. Chose MIDI device in options menu")
-
 if __name__ == "__main__":
     initialize()
 
