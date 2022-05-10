@@ -35,24 +35,27 @@ def translate():
             except:
                 continue
         else:
-            print("MIDI device not configured")
-            sleep(1)
+            print("MIDI device not configured. Go to options-> Select MIDI device.")
+            sleep(5)
                     
 
 
 
 def initialize():
     global dygma
+    dygma = serial.Serial()
     ports = serial.tools.list_ports.comports()
     for p in ports:
-        if p.description == "Raise":
+        if p.pid == 8705 and p.vid == 4617:
             dygma = serial.Serial(port=p.device)
-            if dygma.is_open:
-                print("Success")
-            else:
-                print("Could not connect to Raise. Is another process accessing it?")
-            # really ch1eck if the kb was found
+            
             break
+    if dygma.is_open:
+        print("Success")
+    else:
+        print("Could not connect to Raise. Is it plugged in or another process accessing it?")
+        print("Press any key to continue.")
+        input()
     global config
     config = configuration()
 
