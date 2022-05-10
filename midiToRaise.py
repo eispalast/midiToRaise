@@ -19,18 +19,24 @@ def translate():
     while(True):
         # wait for midi input and send it to the raise
         if (config.midi_device != None):
-            if midi.Input.poll(config.midi_device):
-                midiin=(midi.Input.read(config.midi_device,3))
-                for mid in midiin:
-                    trig_event = mid[0][0] >> 4
-                    trig_channel = mid[0][0] & 0xF
-                    trig_key = mid[0][1]
+            try:
+                if midi.Input.poll(config.midi_device):
+                    midiin=(midi.Input.read(config.midi_device,3))
+                    for mid in midiin:
+                        trig_event = mid[0][0] >> 4
+                        trig_channel = mid[0][0] & 0xF
+                        trig_key = mid[0][1]
 
-                    for a in config.assignments:
-                        if trig_event == a["midi"]["event"] and trig_channel == a["midi"]["channel"] and trig_key == a["midi"]["key"]:
-                            send_string = f"layer.{a['raise_action']['action']} {a['raise_action']['layers'][0]}\n"
-                            dygma.write(send_string.encode('utf-8'))
-                            rotate_layers(a)
+                        for a in config.assignments:
+                            if trig_event == a["midi"]["event"] and trig_channel == a["midi"]["channel"] and trig_key == a["midi"]["key"]:
+                                send_string = f"layer.{a['raise_action']['action']} {a['raise_action']['layers'][0]}\n"
+                                dygma.write(send_string.encode('utf-8'))
+                                rotate_layers(a)
+            except:
+                continue
+        else:
+            print("MIDI device not configured")
+            sleep(1)
                     
 
 

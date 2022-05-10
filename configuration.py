@@ -179,25 +179,30 @@ class configuration:
         menu = Menu(options=options, title="Options")
         result = menu.start()
         if result == 0:
-            self.selectMidiMenu()
+            self.selectMidiDeviceMenu()
         elif result == (len(options)-1):
             self.mainMenu()
     
-    def selectMidiMenu(self):
+    def selectMidiDeviceMenu(self):
+        self.midi_device = None
+        midi.quit()
+        midi.init()
         options = []
         device_ids = []
         option_enum = 1
+        device_list = []
         for i in range(midi.get_count()):
             device = midi.get_device_info(i)
+            device_list.append(device)
             if device[2] == 1:
                 options.append(f"[{option_enum}] {str(device[1])[2:-1]}")
                 option_enum += 1
                 device_ids.append(i)
         options.append("[b] back")
         menu = Menu(options,"Select MIDI device")
-        result = menu.start()
-        if result == (len(options)-1):
+        midi_device_result = menu.start()
+        if midi_device_result == (len(options)-1):
             self.optionsMenu
         else:
-            self.midi_device = midi.Input(device_ids[result])
-            self.midi_device_name = options[result][4:]
+            self.midi_device = midi.Input(device_ids[midi_device_result])
+            self.midi_device_name = options[midi_device_result][4:]
