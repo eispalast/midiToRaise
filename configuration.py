@@ -96,12 +96,20 @@ class configuration:
         print(midiinputs)
         options = []
         translated_inputs = []
-        for id, m in enumerate(midiinputs):
+        id = 0
+        for m in midiinputs:
             channel = m[0] & 0xF
             event = MIDIEVENTS_I2S[m[0]>>4]
             key = m[1]
-            options.append(f"[{id}] Ch. {channel} {event} on {key}")
-            translated_inputs.append([channel,event,key])
+            option_string = f"Ch. {channel} {event} on {key}" 
+            
+            for op in options:
+                if option_string in op:
+                    break
+            else:
+                options.append(f"[{id}] {option_string}")
+                translated_inputs.append([channel,event,key])
+                id += 1
         options.append("[c] cancel")
         menu = Menu(options,"Select a MIDI event")
         result = menu.start()
