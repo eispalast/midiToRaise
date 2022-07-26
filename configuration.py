@@ -8,7 +8,7 @@ MIDIEVENTS_I2S = {0x8:"Note Off", 0x9:"Note On", 0xC:"PC"}
 MIDIEVENTS_S2I = {"Note Off":0x8, "Note On":0x9, "PC":0xC}
 
 ACTION_I2S = {0:"activate",1:"deactivate",2:"moveTo"}
-
+ACTION_S2I = {"activate":0,"deactivate":1,"moveTo":2}
 class configuration:
     path = None
     assignments = None
@@ -40,11 +40,19 @@ class configuration:
                 self.midi_device = midi.Input(i)
 
     def readConfig(self):
-        with open(self.path,"r") as configFile:
-            self.config = json.load(configFile)
-            self.assignments = self.config["assignments"]
-            self.midiStr2int()
-            self.midi_device_name = self.config["mididevice"]
+        try:
+            with open(self.path,"r") as configFile:
+                self.config = json.load(configFile)
+                self.assignments = self.config["assignments"]
+                self.midiStr2int()
+                self.midi_device_name = self.config["mididevice"]
+        except:
+            with open(self.path,"w") as configFile:
+                self.config = {"mididevice":"","assignments":[]}
+                self.assignments = self.config["assignments"]
+                self.midi_device_name = self.config["mididevice"]
+
+            
 
     def midiStr2int(self):
         for a in self.assignments:
@@ -139,24 +147,32 @@ class configuration:
         
         return [action_result,layer_results]
         
-
-    def assignNewMenu(self):
-        midiinput = self.selectMIDIinput()
+# return True when assignment was successful
+    def assignNewMenu(self, midiinput = None, action = None, overwrite = False):
         if midiinput == None:
-            return
-        action = self.selectLayerAction(midiinput=midiinput)
+            midiinput = self.selectMIDIinput()
+            if midiinput == None:
+                return False
         if action == None:
-            return
+            action = self.selectLayerAction(midiinput=midiinput)
+            if action == None:
+                return False
         
         self.assignments.append({"midi":{"channel":midiinput[0],"event":MIDIEVENTS_S2I[midiinput[1]],"key":midiinput[2]},"raise_action":{"action":ACTION_I2S[action[0]],"layers":action[1]}})
 
-        # in case it was a note on event and the action was activate, offer to automatically configure the deactivate function
-        if midiinput[1] == 'Note On' and action[0] == 0:
-            menu = Menu(["[y] yes", "[n] no"], "Do you want to automatically assign the corresponding deactivate layer action?")
-            result = menu.start()
-            if result == 0:
-                self.assignments.append({"midi":{"channel":midiinput[0],"event":8,"key":midiinput[2]},"raise_action":{"action":ACTION_I2S[1],"layers":action[1]}})
+        if not overwrite:
+            # in case it was a note on event and the action was activate, offer to automatically configure the deactivate function
+            if midiinput[1] == 'Note On' and action[0] == 0:
+                menu = Menu(["[y] yes", "[n] no"], "Do you want to automatically assign the corresponding deactivate layer action?")
+                result = menu.start()
+                if result == 0:
+                    self.assignments.append({"midi":{"channel":midiinput[0],"event":8,"key":midiinput[2]},"raise_action":{"action":ACTION_I2S[1],"layers":action[1]}})
         
+        self.writeConfig()
+        return True
+    
+    def deleteBinding(self, id):
+        self.assignments.pop(id)
         self.writeConfig()
     
     def editMenu(self):
@@ -170,15 +186,27 @@ class configuration:
         options.append("[b] back")
         
         menu = Menu(options,title="Choose an assignment to edit")
-        result = menu.start()
+        assignment_id = menu.start()
         
         # in case "back" was pressed
-        if result == (len(options)-1):
+        if assignment_id == (len(options)-1):
             return
-
         # second layer edit menu
-        menu = Menu(options = ["[m] Change MIDI", "[a] Change action", "[d] Delete", "[b] Back"], title=options[result])
+        menu = Menu(options = ["[m] Change MIDI", "[a] Change action", "[d] Delete", "[b] Back"], title=options[assignment_id])
         result = menu.start()
+        if result == 0:
+            action = self.assignments[assignment_id]['raise_action']
+            action = [ACTION_S2I[action['action']],action['layers']]
+            if self.assignNewMenu(action=action,overwrite=True):
+                self.deleteBinding(assignment_id)
+        if result == 1:
+            # brauche Darstellung [channel(int), "midiaction(Note On...",key(int)]
+            midi = self.assignments[assignment_id]['midi']
+            midi = [midi['channel'],MIDIEVENTS_I2S[midi['event']],midi['key']]
+            if self.assignNewMenu(midiinput=midi,overwrite=True):
+                self.deleteBinding(assignment_id)
+        if result == 2:
+            self.deleteBinding(assignment_id)
         if result == 3:
             self.editMenu()
 
